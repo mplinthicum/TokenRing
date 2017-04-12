@@ -14,7 +14,7 @@
 
 	int n;
 	fd_set rset;		/* declare an fd_set for read descriptors */
-	...		
+	...
 
 	for (;;) {	/* endless loop, if you want continuous operation */
 		FD_ZERO(&rset);		/* clear all bits in rset */

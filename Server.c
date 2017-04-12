@@ -7,32 +7,32 @@
  * will be running your process on. Also, change the port number to
  * a suitable port number as indicated in the project writeup.
  */
+ 
+#include "header.h"
 
-int Server()
-{
+int Server() {
+
 	struct sockaddr_in myaddr, otheraddr;
-	struct hostent *myname;
+	int s, fd, otherlength = sizeof(otheraddr);
 
-	int s, fd, otherlength;
-	FILE *fdopen(), *fp;
-	char *hostname = "vulcan", ch;
-	int hostnamelength;
-
-	pid_t pid;
-
-	if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) ReportError ("socket");
-	myname = gethostbyname(hostname);
+	if((s = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+		ReportError("Socket creation error");
+	}
 
 	bzero(&myaddr, sizeof(myaddr));
 	myaddr.sin_family  = AF_INET;
-	myaddr.sin_port = htons(22222);
-	bcopy(myname->h_addr_list[0], &myaddr.sin_addr, myname->h_length);
-	bind(s, &myaddr, sizeof(myaddr));
+	myaddr.sin_port = PORT_NO;
+	myaddr.sin_addr.s_addr = INADDR_ANY;
+	
+	if(bind(s, (struct sockaddr *)&myaddr, sizeof(myaddr)) < 0){
+		ReportError("Bind error");
+	}
 
 	listen(s, 1);
 
-	otherlength = sizeof(otheraddr);
-	fd = accept(s, &otheraddr, &otherlength);
+	if((fd = accept(s, (struct sockaddr *)&otheraddr, &otherlength)) < 0){
+		ReportError("Accept error");
+	}
 
 	fprintf(stdout, "Connected");
 

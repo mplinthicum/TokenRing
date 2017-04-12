@@ -6,36 +6,32 @@
  * the remote machine.  Also, change the port number to a suitable port
  * number as indicated in the project writeup.
  */
+ 
+#include "header.h"
 
-int Client()
-{
-	int s;
-	int n;
-	int code;
-	FILE *fp;
-	char *otherhostname="vulcan", ch, thishostname[256];
+int Client() {
 
+	int s, n, code;
 	struct hostent *otherhost;
 	struct sockaddr_in otheraddr;
-
-	pid_t pid;
-
-	code = gethostname(thishostname, sizeof(thishostname));
 
 	bzero(&otheraddr, sizeof(otheraddr));
 
 	otheraddr.sin_family = AF_INET;
-	otheraddr.sin_port = htons(22222);
+	otheraddr.sin_port = PORT_NO;
+	otheraddr.sin_addr.s_addr = INADDR_ANY;
 	
-	s = socket(AF_INET, SOCK_STREAM, 0);
+	if((s = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+		ReportError("Socket creation error");
+	}
 
-	otherhost = gethostbyname(otherhostname);
-	bcopy(otherhost->h_addr_list[0], &otheraddr.sin_addr, otherhost->h_length);
+	if((n = connect(s, (struct sockaddr *)&otheraddr, sizeof(otheraddr))) < 0){
+		ReportError("Connection error");
+	}
 
-	n = connect(s, &otheraddr, sizeof(otheraddr));
-
-	if ( n < 0)
+	if (n < 0){
 		return(n);
-	else
+	} else {
 		return(s);
+	}
 }
